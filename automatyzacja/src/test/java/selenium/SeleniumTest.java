@@ -28,7 +28,6 @@ public class SeleniumTest {
     }
 
     @Test
-    @Ignore
     public void canFindCsPageOnFirstGoogleResultPage() {
         driver.get(GOOGLE_LINK);
         WebElement searchBox = driver.findElement(SEARCH_BOX_LOCATOR);

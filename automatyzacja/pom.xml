@@ -9,12 +9,14 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
+        <!-- dodajemy junita aby móc wykonać testy i korzystać z annotacji takich jak @Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-
+        <!-- dodajemy selenium aby móc wykonywać testy z wykorzystaniem webdrivera -->
+        <!-- uwaga: do uruchomienia testów wciąż potrzebujemy plików inarnych np. chromedriver.exe -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
@@ -24,6 +26,7 @@
 
     <build>
         <plugins>
+            <!-- Tego potrzebujemy aby móc korzystać z klasy Stream() - wymuszamy kompliację na javie 8 -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -33,19 +36,54 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <!-- Tego potrzebujemy, żeby testy mogły uruchomić się rownolegle -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <groupId>org.apache.maven.plugins</groupId>
                 <version>2.20.1</version>
+                <!--
+                Takie ustawienie powoduje, że wykonamy maksymalnie 5 testów jednocześnie.
+
+                Zamiast 'all' można wpisać np. 'methods' lub 'classes' - doczytaajcie o surefire jeśli trzeba,
+                ponieważ tu jest jedynie prosty przykład podpowiadający, jak tego użyć.
+                -->
                 <configuration>
                     <parallel>all</parallel>
                     <threadCount>5</threadCount>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <!--
+        Tutaj mam profile, które pozwalają mi nadpisać z linii poleceń mavena configurację testów.
+
+        Domyślna konfiguracja testów jest trzymana w pliku /src/test/resources/test.properties projektu.
+
+        Jeśli test korzysta z pliku 'test.properties' można tym konfigurować testy.
+
+        jeśli test nie korzysta z pliku 'test.properties' wtedy konfiguracja musi być wprost w tescie.
+
+        Jeśli korzystamy z 'test.properties' a chcemy go nadpisać, używamy opcji mavena,
+        np. polecenie 'maven clean install -Puse-browser -DBrowser=firefox' wymusi użycie lokalnego firefoxa.
+
+        Jeśli użyjemy 'maven clean install -Puse-grid -Dbrowser=firefox' maven krzyknie, że brak parametrów.
+        Poprawne wywołanie wymaga wtedy podanie również adresu Grid Huba jak i portu, na którym słucha,
+        np. tak: 'maven clean install -Puse-grid -Dbrowser=firefox -Dhub.addres=127.0.0.1 -Dhub.port=6543'
+
+        To umożliwia np. trzymanie w 'test.properties' konfiguracji do uruchamiania lokalnego z IntelliJ IDEA,
+        a w Continuous Integration można do mavena przekazywać parametry i nadpisywać to, co jest w 'test.properties'.
+
+        Uwaga: to jest prosty przykład, normalnie pewnie jeszcze chcielibyśmy np. sterować wersją przeglądarki,
+        a zatem trzeba by dodać parametr do tego zarówno w 'test.properties' jak i w mavenie i odpowiednią tego
+        obsługę.
+
+        Potem trzeba ten parametr przekazać do oiektu klasy RemoteDriver() jako jeden z parametrów, na przykład
+        jeśli użyty ma być chrome, to musimy wersję zawrzeć w obiekcie klasy ChromeOptions(), który przekazujemy
+        do obiektu klasu RemoteDriver().
+        -->
         <profile>
             <id>use-grid</id>
             <properties>
@@ -66,6 +104,7 @@
                                 <goals>
                                     <goal>write-project-properties</goal>
                                 </goals>
+                                <!-- Ten plugin jest skonfigurowany tak, by nadpisać plik 'test.properties' -->
                                 <configuration>
                                     <outputFile>${project.build.testOutputDirectory}/test.properties</outputFile>
                                 </configuration>
@@ -93,6 +132,7 @@
                                 <goals>
                                     <goal>write-project-properties</goal>
                                 </goals>
+                                <!-- Ten plugin jest skonfigurowany tak, by nadpisać plik 'test.properties' -->
                                 <configuration>
                                     <outputFile>${project.build.testOutputDirectory}/test.properties</outputFile>
                                 </configuration>

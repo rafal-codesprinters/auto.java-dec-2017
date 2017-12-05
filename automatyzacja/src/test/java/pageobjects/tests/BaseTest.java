@@ -30,7 +30,8 @@ public class BaseTest {
     private static final String TARGET_GRID = "grid";
     private static final String BROWSER_CHROME = "chrome";
     private static final String BROWSER_FIREFOX = "firefox";
-    WebDriver driver;
+    private static final int DRIVER_IMPLICIT_WAIT_TIMEOUT = 10;
+    protected WebDriver driver;
 
     @Before
     public void initWebDriver() throws IOException {
@@ -48,40 +49,36 @@ public class BaseTest {
         String hubAddress = testProperties.getProperty(PROP_HUB_ADDRESS);
         String hubPort = testProperties.getProperty(PROP_HUB_PORT);
 
-        switch (target) {
-            case TARGET_BROWSER:
-                switch (browser) {
-                    case BROWSER_CHROME:
-                        driver = new ChromeDriver();
-                        break;
-                    case BROWSER_FIREFOX:
-                        driver = new FirefoxDriver();
-                        break;
-                    default:
-                        throw new InvalidPropertiesFormatException(PROP_BROWSER);
-                }
-                break;
-            case TARGET_GRID:
-                URL gridHubUrl = new URL("http://" + hubAddress + ":" + hubPort + "/wd/hub");
-                switch (browser) {
-                    case BROWSER_CHROME:
-                        ChromeOptions chromeOptions = new ChromeOptions();
-                        driver = new RemoteWebDriver(gridHubUrl, chromeOptions);
-                        break;
-                    case BROWSER_FIREFOX:
-                        FirefoxOptions firefoxOptions = new FirefoxOptions();
-                        driver = new RemoteWebDriver(gridHubUrl, firefoxOptions);
-                        break;
-                    default:
-                        throw new InvalidPropertiesFormatException(PROP_BROWSER);
-                }
-                break;
-            default:
-                throw new InvalidPropertiesFormatException(PROP_TARGET);
+        if (target.equals(TARGET_BROWSER)) {
+            if (browser.equals(BROWSER_CHROME)) {
+                driver = new ChromeDriver();
+
+            } else if (browser.equals(BROWSER_FIREFOX)) {
+                driver = new FirefoxDriver();
+
+            } else {
+                throw new InvalidPropertiesFormatException(PROP_BROWSER);
+            }
+        } else if (target.equals(TARGET_GRID)) {
+            URL gridHubUrl = new URL("http://" + hubAddress + ":" + hubPort + "/wd/hub");
+            if (browser.equals(BROWSER_CHROME)) {
+                ChromeOptions chromeOptions = new ChromeOptions();
+                driver = new RemoteWebDriver(gridHubUrl, chromeOptions);
+
+            } else if (browser.equals(BROWSER_FIREFOX)) {
+                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                driver = new RemoteWebDriver(gridHubUrl, firefoxOptions);
+
+            } else {
+                throw new InvalidPropertiesFormatException(PROP_BROWSER);
+            }
+
+        } else {
+            throw new InvalidPropertiesFormatException(PROP_TARGET);
         }
 
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(DRIVER_IMPLICIT_WAIT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     @After
