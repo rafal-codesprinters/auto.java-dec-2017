@@ -45,7 +45,7 @@ public class WordPressNotePage extends WordPressPage {
         WebElement emailBox = driver.findElement(LOCATOR_EMAIL_BOX);
         emailBox.click();
         emailBox.clear();
-        emailBox.sendKeys(comment.getUser().getEmail());
+        emailBox.sendKeys(comment.getAuthorEmail());
 
         WebElement authorLabel = driver.findElement(LOCATOR_AUTHOR_PLACEHOLDER_LABEL);
         authorLabel.click();
@@ -54,7 +54,7 @@ public class WordPressNotePage extends WordPressPage {
         WebElement authorBox = driver.findElement(LOCATOR_AUTHOR_BOX);
         authorBox.click();
         authorBox.clear();
-        authorBox.sendKeys(comment.getUser().getName());
+        authorBox.sendKeys(comment.getAuthorName());
 
         waitUntilElementIsClickable(LOCATOR_COMMENT_POST_BUTTON);
         driver.findElement(LOCATOR_COMMENT_POST_BUTTON).click();
@@ -73,12 +73,12 @@ public class WordPressNotePage extends WordPressPage {
         WebElement emailBox = driver.findElement(LOCATOR_EMAIL_BOX);
         emailBox.click();
         emailBox.clear();
-        emailBox.sendKeys(reply.getUser().getEmail());
+        emailBox.sendKeys(reply.getAuthorEmail());
 
         WebElement authorBox = driver.findElement(LOCATOR_AUTHOR_BOX);
         authorBox.click();
         authorBox.clear();
-        authorBox.sendKeys(reply.getUser().getName());
+        authorBox.sendKeys(reply.getAuthorName());
 
         waitUntilElementIsClickable(LOCATOR_COMMENT_POST_BUTTON);
         driver.findElement(LOCATOR_COMMENT_POST_BUTTON).click();
@@ -87,13 +87,13 @@ public class WordPressNotePage extends WordPressPage {
     }
 
     private By commentLocatorByAuthor(Comment comment) {
-        return By.xpath("//article//cite[text()='" + comment.getUser().getName() + "']");
+        return By.xpath("//article//cite[text()='" + comment.getAuthorName() + "']");
     }
 
     private Stream<WebElement> findComments(Comment comment) {
         Stream<WebElement> comments = driver.findElements(LOCATOR_COMMENT).stream();
         return comments
-                .filter(element -> element.findElement(LOCATOR_AUTHOR_NAME_IN_COMMENT).getText().equals(comment.getUser().getName()))
+                .filter(element -> element.findElement(LOCATOR_AUTHOR_NAME_IN_COMMENT).getText().equals(comment.getAuthorName()))
                 .filter(element -> element.findElement(LOCATOR_TEXT_IN_COMMENT).getText().equals(comment.getCommentText()));
     }
 
@@ -121,7 +121,7 @@ public class WordPressNotePage extends WordPressPage {
 
     public boolean checkReplyExists(Comment comment, Comment reply) throws Exception {
         List<WebElement> commentsWithReplies = driver.findElements(LOCATOR_COMMENT_WITH_REPLY).stream()
-                .filter(element -> element.findElement(LOCATOR_AUTHOR_NAME_IN_COMMENT).getText().equals(comment.getUser().getName()))
+                .filter(element -> element.findElement(LOCATOR_AUTHOR_NAME_IN_COMMENT).getText().equals(comment.getAuthorName()))
                 .filter(element -> element.findElement(LOCATOR_TEXT_IN_COMMENT).getText().equals(comment.getCommentText()))
                 .collect(Collectors.toList());
 
@@ -129,7 +129,7 @@ public class WordPressNotePage extends WordPressPage {
         if (commentsWithReplies.size() == 0) throw new Exception("No comment with reply found");
 
         return commentsWithReplies.get(0).findElements(LOCATOR_COMMENT).stream()
-                .filter(element -> element.findElement(LOCATOR_AUTHOR_NAME_IN_COMMENT).getText().equals(reply.getUser().getName()))
+                .filter(element -> element.findElement(LOCATOR_AUTHOR_NAME_IN_COMMENT).getText().equals(reply.getAuthorName()))
                 .filter(element -> element.findElement(LOCATOR_TEXT_IN_COMMENT).getText().equals(reply.getCommentText())).count() == 1;
 
     }
