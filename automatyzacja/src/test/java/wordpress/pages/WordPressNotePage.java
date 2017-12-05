@@ -1,6 +1,7 @@
 package wordpress.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import wordpress.domain.Comment;
@@ -24,7 +25,7 @@ public class WordPressNotePage extends WordPressPage {
     private static final By LOCATOR_COMMENT_REPLY_LINK = By.className("comment-reply-link");
     private static final By LOCATOR_AUTHOR_NAME_IN_COMMENT = By.tagName("cite");
     private static final By LOCATOR_TEXT_IN_COMMENT = By.cssSelector(".comment-content > p");
-    private static final By LOCATOR_COMMENT_WITH_REPLY = By.cssSelector("li.comment.even");
+    private static final By LOCATOR_COMMENT_WITH_REPLY = By.xpath("//li[.//ul[@class='children']]");
 
     public WordPressNotePage(WebDriver driver) {
         super(driver);
@@ -58,8 +59,6 @@ public class WordPressNotePage extends WordPressPage {
 
         waitUntilElementIsClickable(LOCATOR_COMMENT_POST_BUTTON);
         driver.findElement(LOCATOR_COMMENT_POST_BUTTON).click();
-
-        waitUntilElementIsPresent(commentLocatorByAuthor(comment));
     }
 
     private void enterReplyDataAndSubmit(Comment reply) {
@@ -82,8 +81,6 @@ public class WordPressNotePage extends WordPressPage {
 
         waitUntilElementIsClickable(LOCATOR_COMMENT_POST_BUTTON);
         driver.findElement(LOCATOR_COMMENT_POST_BUTTON).click();
-
-        waitUntilElementIsPresent(commentLocatorByAuthor(reply));
     }
 
     private By commentLocatorByAuthor(Comment comment) {
@@ -98,9 +95,20 @@ public class WordPressNotePage extends WordPressPage {
     }
 
     public void addComment(Comment comment) {
+        waitUntilElementIsPresent(LOCATOR_COMMENT_BOX);
         WebElement commentBox = driver.findElement(LOCATOR_COMMENT_BOX);
         commentBox.click();
         enterCommentDataAndSubmit(comment);
+        waitForCommentsProcessing(comment);
+    }
+
+    private void waitForCommentsProcessing(Comment comment) {
+        try {
+            waitUntilElementIsPresent(commentLocatorByAuthor(comment));
+        } catch (TimeoutException exception) {
+            driver.navigate().refresh();
+            waitUntilElementIsPresent(commentLocatorByAuthor(comment));
+        }
     }
 
     public void addReplyToComment(Comment comment, Comment reply) throws Exception {
@@ -112,6 +120,7 @@ public class WordPressNotePage extends WordPressPage {
         WebElement replyLink = comments.get(0).findElement(LOCATOR_COMMENT_REPLY_LINK);
         replyLink.click();
         enterReplyDataAndSubmit(reply);
+        waitForCommentsProcessing(reply);
     }
 
     public boolean checkCommentExists(Comment comment) {
