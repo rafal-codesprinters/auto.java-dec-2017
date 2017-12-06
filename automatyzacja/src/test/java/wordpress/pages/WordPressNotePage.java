@@ -35,29 +35,23 @@ public class WordPressNotePage extends WordPressPage {
         waitUntilElementIsVisible(LOCATOR_COMMENT_POST_BUTTON);
 
         WebElement commentBox = driver.findElement(LOCATOR_COMMENT_BOX);
-        commentBox.click();
-        commentBox.clear();
-        commentBox.sendKeys(comment.getCommentText());
+        writeInto(comment.getCommentText(), commentBox);
 
         WebElement emailLabel = driver.findElement(LOCATOR_EMAIL_PLACEHOLDER_LABEL);
         emailLabel.click();
         waitUntilElementIsHidden(LOCATOR_EMAIL_PLACEHOLDER_LABEL);
 
         WebElement emailBox = driver.findElement(LOCATOR_EMAIL_BOX);
-        emailBox.click();
-        emailBox.clear();
-        emailBox.sendKeys(comment.getAuthorEmail());
+        writeInto(comment.getAuthorEmail(), emailBox);
 
         WebElement authorLabel = driver.findElement(LOCATOR_AUTHOR_PLACEHOLDER_LABEL);
         authorLabel.click();
         waitUntilElementIsHidden(LOCATOR_AUTHOR_PLACEHOLDER_LABEL);
 
         WebElement authorBox = driver.findElement(LOCATOR_AUTHOR_BOX);
-        authorBox.click();
-        authorBox.clear();
-        authorBox.sendKeys(comment.getAuthorName());
+        writeInto(comment.getAuthorName(), authorBox);
 
-        waitUntilElementIsClickable(LOCATOR_COMMENT_POST_BUTTON);
+        waitUntilElementIsClickableBy(LOCATOR_COMMENT_POST_BUTTON);
         driver.findElement(LOCATOR_COMMENT_POST_BUTTON).click();
     }
 
@@ -65,21 +59,15 @@ public class WordPressNotePage extends WordPressPage {
         waitUntilElementIsVisible(LOCATOR_COMMENT_POST_BUTTON);
 
         WebElement commentBox = driver.findElement(LOCATOR_COMMENT_BOX);
-        commentBox.click();
-        commentBox.clear();
-        commentBox.sendKeys(reply.getCommentText());
+        writeInto(reply.getCommentText(), commentBox);
 
         WebElement emailBox = driver.findElement(LOCATOR_EMAIL_BOX);
-        emailBox.click();
-        emailBox.clear();
-        emailBox.sendKeys(reply.getAuthorEmail());
+        writeInto(reply.getAuthorEmail(), emailBox);
 
         WebElement authorBox = driver.findElement(LOCATOR_AUTHOR_BOX);
-        authorBox.click();
-        authorBox.clear();
-        authorBox.sendKeys(reply.getAuthorName());
+        writeInto(reply.getAuthorName(), authorBox);
 
-        waitUntilElementIsClickable(LOCATOR_COMMENT_POST_BUTTON);
+        waitUntilElementIsClickableBy(LOCATOR_COMMENT_POST_BUTTON);
         driver.findElement(LOCATOR_COMMENT_POST_BUTTON).click();
     }
 

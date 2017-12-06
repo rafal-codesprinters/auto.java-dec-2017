@@ -2,6 +2,7 @@ package wordpress.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -30,7 +31,7 @@ public class WordPressPage {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
     }
 
-    protected void waitUntilElementIsClickable(By locator) {
+    protected void waitUntilElementIsClickableBy(By locator) {
         WebDriverWait wait = new WebDriverWait(driver, TIMEOUT_IN_SECONDS_WAITING_FOR_ELEMENT_CLICKABLE);
         wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
@@ -38,5 +39,16 @@ public class WordPressPage {
     protected void waitUntilElementIsPresent(By locator) {
         WebDriverWait wait = new WebDriverWait(driver, TIMEOUT_IN_SECONDS_WAITING_FOR_ELEMENT_PRESENT);
         wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
+    protected void waitUntilElementIsClickable(WebElement webElement) {
+        WebDriverWait wait = new WebDriverWait(driver, TIMEOUT_IN_SECONDS_WAITING_FOR_ELEMENT_CLICKABLE);
+        wait.until(ExpectedConditions.elementToBeClickable(webElement));
+    }
+
+    protected void writeInto(String text, WebElement webElement) {
+        webElement.click();
+        webElement.clear();
+        webElement.sendKeys(text);
     }
 }
